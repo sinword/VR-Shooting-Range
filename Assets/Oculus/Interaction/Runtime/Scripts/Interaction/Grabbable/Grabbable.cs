@@ -197,6 +197,10 @@ namespace Oculus.Interaction
             base.OnDisable();
         }
 
+        public bool IsGrabbed() {
+            return _activeTransformer != null;
+        }
+
         #region Inject
 
         public void InjectOptionalOneGrabTransformer(ITransformer transformer)
