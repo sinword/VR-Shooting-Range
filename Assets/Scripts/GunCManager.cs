@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using Oculus.Interaction;
 public class GunManager : MonoBehaviour
 {
+    string pattern = @"\d+";
+    private int _score = 0;
     public SimpleShoot simpleShoot;
     public OVRInput.Button shootButton;
     public OVRInput.Controller shootingController;
@@ -14,8 +17,8 @@ public class GunManager : MonoBehaviour
     // Bullet
     [SerializeField]
     private Transform _bulletSpawnPoint;
-    // [SerializeField]
-    // private GameObject _hitEffect;
+    [SerializeField]
+    private GameObject _hitEffect;
     // [SerializeField]
     // private TrailRenderer _bulletTrail;
     [SerializeField]
@@ -36,22 +39,23 @@ public class GunManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         if (OVRInput.GetDown(shootButton, shootingController) && _grabbable != null && _grabbable.IsGrabbed()) {
             if (_lastShootTime + _shootDelay < Time.time) {
                 simpleShoot.StartShoot();
                 _fireSound.Play();
                 Vector3 direction = _bulletSpawnPoint.forward;
                 RaycastHit hitInfo;
-                Debug.LogWarning("Bullet shoot direction: " + direction);
+                // Debug.LogWarning("Bullet shoot direction: " + direction);
                 if (Physics.Raycast(_bulletSpawnPoint.position, direction, out hitInfo, 100f)) {
-                    Debug.LogWarning("Hit: " + hitInfo.collider.gameObject.name);
-                    if (hitInfo.collider.gameObject.name == "TargetCollider") {
-                        // Instantiate(_hitEffect, hitInfo.point, Quaternion.identity);
-                        Debug.LogWarning("Target hit!");
-                    }
-                    else {
-                        Debug.LogWarning("Hit object is not a target.");
+                    // Debug.LogWarning("Hit: " + hitInfo.collider.gameObject.name);
+                    GameObject hitEffectInstance = Instantiate(_hitEffect, hitInfo.point, Quaternion.identity);
+                    Destroy(hitEffectInstance, 5f);
+                    Match match = Regex.Match(hitInfo.collider.gameObject.name, pattern);
+                    if (match.Success) {
+                        int targetNumber = int.Parse(match.Value);
+                        Debug.LogWarning("Hit target: " + targetNumber);
+                        _score += targetNumber;
+                        Debug.LogWarning("Score: " + _score);
                     }
                 }
                 else {
