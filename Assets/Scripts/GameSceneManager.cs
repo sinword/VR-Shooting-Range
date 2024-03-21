@@ -30,7 +30,7 @@ public class GameSceneManager : MonoBehaviour
         Transform childTransform = _gun.transform.Find("M1911 Handgun_Silver (Shooting)");
         _gunOriginalPosition = childTransform.position;
         _gunOriginalRotation = childTransform.rotation;
-        _gun.SetActive(false);
+        _gun.transform.Find("M1911 Handgun_Silver (Shooting)").gameObject.SetActive(false);
         playerName = PlayerPrefs.GetString("PlayerName");
         Debug.LogWarning("Player name: " + playerName);
         ShowRecord();
@@ -45,9 +45,10 @@ public class GameSceneManager : MonoBehaviour
         _gameMenuUI.GetComponentInChildren<Canvas>().enabled = false;
         _gameInfoUI.GetComponentInChildren<Canvas>().enabled = true;
         SwtichRayInteractable(false);
+        _gun.transform.Find("M1911 Handgun_Silver (Shooting)").gameObject.SetActive(true);
         _gun.transform.Find("M1911 Handgun_Silver (Shooting)").position = _gunOriginalPosition;
         _gun.transform.Find("M1911 Handgun_Silver (Shooting)").rotation= _gunOriginalRotation;
-        _gun.SetActive(true);
+        // _gun.SetActive(true);
     }
 
     public void BackButton() {
@@ -62,7 +63,7 @@ public class GameSceneManager : MonoBehaviour
         _gameInfoUI.GetComponentInChildren<Canvas>().enabled = false;
         SwtichRayInteractable(true);
         // Set gun to original position
-        _gun.SetActive(false);
+        _gun.transform.Find("M1911 Handgun_Silver (Shooting)").gameObject.SetActive(false);
         UpdateRecord();
         ShowRecord();
         // GameObject.Find("RankPlayerName").GetComponent<TMPro.TextMeshProUGUI>().text = playerName + ", Score: " + _gameInfoUI.GetComponent<GameInfoManager>().GetScore();

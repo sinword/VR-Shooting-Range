@@ -11,7 +11,8 @@ public class GunManager : MonoBehaviour
     public SimpleShoot simpleShoot;
     public OVRInput.Button shootButton;
     public OVRInput.Controller shootingController;
-
+    [SerializeField]
+    private GameObject _gun;
     private Grabbable _grabbable;
     private AudioSource _fireSound;
 
@@ -30,19 +31,24 @@ public class GunManager : MonoBehaviour
     public event FireEvent OnShoot;
     void Start()
     {
-        _grabbable = GetComponent<Grabbable>();
-        _fireSound = GetComponent<AudioSource>();
+        _grabbable = _gun.GetComponent<Grabbable>();
+        _fireSound = _gun.GetComponent<AudioSource>();
+        pattern = @"\d+";
         if (_bulletSpawnPoint != null)
         {
             Vector3 forwardDirection = _bulletSpawnPoint.forward;
         }
-        pattern = @"\d+";
     }
 
     // Update is called once per frame
     void Update()
     {
+        Debug.LogWarning("Can shoot: " + canShoot);
+        Debug.LogWarning("Shoot button: " + OVRInput.GetDown(shootButton, shootingController));
+        Debug.LogWarning("Grabbable: " + (_grabbable != null));
+        Debug.LogWarning("Is grabbed: " + _grabbable.IsGrabbed());
         if (canShoot && OVRInput.GetDown(shootButton, shootingController) && _grabbable != null && _grabbable.IsGrabbed()) {
+            // Debug.LogWarning("Shoot button is pressed.");
             if (_lastShootTime + _shootDelay < Time.time) {
                 simpleShoot.StartShoot();
                 _fireSound.Play();

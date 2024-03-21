@@ -10,11 +10,12 @@ public class GameInfoManager : MonoBehaviour
     private GameObject _score;
     [SerializeField]
     private GameObject _ammo;
+    [SerializeField]
     private GunManager _gunManager;
     string playerName;
     
     private int _totalScore = 0;
-    private int _leftAmmo = 5;
+    private int _leftAmmo = 10;
 
     public delegate void GameOver();
     public event GameOver OnGameOver;
@@ -48,7 +49,7 @@ public class GameInfoManager : MonoBehaviour
 
     public void Reset() {
         _totalScore = 0;
-        _leftAmmo = 5;
+        _leftAmmo = 10;
         _gunManager.canShoot = true;
         _score.GetComponent<TMPro.TextMeshProUGUI>().text = "Score: " + _totalScore;
         _ammo.GetComponent<TMPro.TextMeshProUGUI>().text = "Ammo: " + _leftAmmo;
