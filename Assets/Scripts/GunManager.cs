@@ -5,8 +5,9 @@ using UnityEngine;
 using Oculus.Interaction;
 public class GunManager : MonoBehaviour
 {
-    string pattern = @"\d+";
-    private int _score = 0;
+    public bool canShoot = true;
+    string pattern;
+    private int _hitScore;
     public SimpleShoot simpleShoot;
     public OVRInput.Button shootButton;
     public OVRInput.Controller shootingController;
@@ -24,7 +25,9 @@ public class GunManager : MonoBehaviour
     [SerializeField]
     private float _shootDelay = 0.1f;
     private float _lastShootTime;
-
+    // Create an event
+    public delegate void FireEvent();
+    public event FireEvent OnShoot;
     void Start()
     {
         _grabbable = GetComponent<Grabbable>();
@@ -32,39 +35,47 @@ public class GunManager : MonoBehaviour
         if (_bulletSpawnPoint != null)
         {
             Vector3 forwardDirection = _bulletSpawnPoint.forward;
-            Debug.LogWarning("Bullet spawn point forward direction: " + forwardDirection);
         }
+        pattern = @"\d+";
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (OVRInput.GetDown(shootButton, shootingController) && _grabbable != null && _grabbable.IsGrabbed()) {
+        if (canShoot && OVRInput.GetDown(shootButton, shootingController) && _grabbable != null && _grabbable.IsGrabbed()) {
             if (_lastShootTime + _shootDelay < Time.time) {
                 simpleShoot.StartShoot();
                 _fireSound.Play();
-                Vector3 direction = _bulletSpawnPoint.forward;
-                RaycastHit hitInfo;
-                // Debug.LogWarning("Bullet shoot direction: " + direction);
-                if (Physics.Raycast(_bulletSpawnPoint.position, direction, out hitInfo, 100f)) {
-                    // Debug.LogWarning("Hit: " + hitInfo.collider.gameObject.name);
-                    GameObject hitEffectInstance = Instantiate(_hitEffect, hitInfo.point, Quaternion.identity);
-                    Destroy(hitEffectInstance, 5f);
-                    Match match = Regex.Match(hitInfo.collider.gameObject.name, pattern);
-                    if (match.Success) {
-                        int targetNumber = int.Parse(match.Value);
-                        Debug.LogWarning("Hit target: " + targetNumber);
-                        _score += targetNumber;
-                        Debug.LogWarning("Score: " + _score);
-                    }
-                }
-                else {
-                    Debug.LogWarning("No hit");
-                }
+                _lastShootTime = Time.time;
+                _hitScore = FireCheck();
+                OnShoot?.Invoke();
             }
             
         }
     }
+
+    private int FireCheck() {
+        Vector3 direction = _bulletSpawnPoint.forward;
+        RaycastHit hitInfo;
+        // Debug.LogWarning("Bullet shoot direction: " + direction);
+        if (Physics.Raycast(_bulletSpawnPoint.position, direction, out hitInfo, 100f)) {
+            // Debug.LogWarning("Hit: " + hitInfo.collider.gameObject.name);
+            GameObject hitEffectInstance = Instantiate(_hitEffect, hitInfo.point, Quaternion.identity);
+            Destroy(hitEffectInstance, 5f);
+            Match match = Regex.Match(hitInfo.collider.gameObject.name, pattern);
+            if (match.Success) {
+                int targetNumber = int.Parse(match.Value);
+                Debug.LogWarning("Hit target: " + targetNumber);
+                return targetNumber;
+            }
+        }
+        return 0;
+    }
+
+    public int GetScore() {
+        return _hitScore;
+    }
+    
 
     // private IEnumerator SpawnTrail(TrailRenderer trail, RaycastHit hit) {
     //     float time = 0;
