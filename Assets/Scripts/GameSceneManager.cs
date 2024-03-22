@@ -28,6 +28,9 @@ public class GameSceneManager : MonoBehaviour
     // record the gun original position and rotation
     private Vector3 _gunOriginalPosition;
     private Quaternion _gunOriginalRotation;
+    public delegate void GameStart();
+    public event GameStart OnGameStart;
+
     
     public void Start() {
         _gameInfoUI.GetComponentInChildren<Canvas>().enabled = false;
@@ -43,10 +46,11 @@ public class GameSceneManager : MonoBehaviour
     
     public void PlayButton() {  
         Debug.LogWarning("Game Start");
+        OnGameStart?.Invoke();
         _gameStartAudio.Play();
         _gameInfoUI.GetComponent<GameInfoManager>().Reset();
         _gameInfoUI.GetComponent<GameInfoManager>().OnGameOver += GameOver;
-         // Close gameMenuUI and open gameInfoUI
+        // Deactivate gameMenuUI and activate gameInfoUI
         _gameMenuUI.SetActive(false);
         _gameInfoUI.GetComponentInChildren<Canvas>().enabled = true;
         _gun.transform.Find("M1911 Handgun_Silver (Shooting)").gameObject.SetActive(true);
@@ -61,7 +65,7 @@ public class GameSceneManager : MonoBehaviour
         Debug.LogWarning("Game over.");
         _gameOverAudio.Play();
         _gameInfoUI.GetComponent<GameInfoManager>().OnGameOver -= GameOver;
-        // Close gameInfoUI and open gameMenuUI
+        // Deactivate gameInfoUI and activate gameMenuUI
         _gameMenuUI.SetActive(true);
         _gameInfoUI.GetComponentInChildren<Canvas>().enabled = false;
         _gun.transform.Find("M1911 Handgun_Silver (Shooting)").position = _gunOriginalPosition;
