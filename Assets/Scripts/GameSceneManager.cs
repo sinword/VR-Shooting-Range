@@ -50,8 +50,6 @@ public class GameSceneManager : MonoBehaviour
         _gameMenuUI.SetActive(false);
         _gameInfoUI.GetComponentInChildren<Canvas>().enabled = true;
         _gun.transform.Find("M1911 Handgun_Silver (Shooting)").gameObject.SetActive(true);
-        _gun.transform.Find("M1911 Handgun_Silver (Shooting)").position = _gunOriginalPosition;
-        _gun.transform.Find("M1911 Handgun_Silver (Shooting)").rotation= _gunOriginalRotation;
         SwtichRayInteractable(false);
     }
 
@@ -66,6 +64,8 @@ public class GameSceneManager : MonoBehaviour
         // Close gameInfoUI and open gameMenuUI
         _gameMenuUI.SetActive(true);
         _gameInfoUI.GetComponentInChildren<Canvas>().enabled = false;
+        _gun.transform.Find("M1911 Handgun_Silver (Shooting)").position = _gunOriginalPosition;
+        _gun.transform.Find("M1911 Handgun_Silver (Shooting)").rotation= _gunOriginalRotation;
         _gun.transform.Find("M1911 Handgun_Silver (Shooting)").gameObject.SetActive(false);
         SwtichRayInteractable(true);
         UpdateRecord();

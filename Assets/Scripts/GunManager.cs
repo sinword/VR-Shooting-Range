@@ -30,7 +30,7 @@ public class GunManager : MonoBehaviour
     {
         _grabbable = _gun.GetComponent<Grabbable>();
         _fireSound = _gun.GetComponent<AudioSource>();
-        pattern = @"\d+";
+        pattern = "TargetCollider(\\d+)";
         if (_bulletSpawnPoint != null)
         {
             Vector3 forwardDirection = _bulletSpawnPoint.forward;
@@ -57,11 +57,11 @@ public class GunManager : MonoBehaviour
         // Debug.LogWarning("Bullet shoot direction: " + direction);
         if (Physics.Raycast(_bulletSpawnPoint.position, direction, out hitInfo, 100f)) {
             // Debug.LogWarning("Hit: " + hitInfo.collider.gameObject.name);
-            GameObject hitEffectInstance = Instantiate(_hitEffect, hitInfo.point, Quaternion.identity);
+            GameObject hitEffectInstance = Instantiate(_hitEffect, hitInfo.point, _hitEffect.transform.rotation);
             Destroy(hitEffectInstance, 5f);
             Match match = Regex.Match(hitInfo.collider.gameObject.name, pattern);
             if (match.Success) {
-                int targetNumber = int.Parse(match.Value);
+                int targetNumber = int.Parse(match.Groups[1].Value);
                 Debug.LogWarning("Hit target: " + targetNumber);
                 return targetNumber;
             }

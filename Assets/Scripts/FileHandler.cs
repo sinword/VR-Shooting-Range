@@ -24,8 +24,8 @@ public static class FileHandler {
     }
 
     private static string GetPath (string fileName) {
-        // return Application.persistentDataPath + "/" + fileName;
-        return Path.Combine("Assets/Resources/", fileName);
+        return Application.persistentDataPath + "/" + fileName;
+        // return Path.Combine("Assets/Resources/", fileName);
     }
 
     private static void WriteFile (string path, string content) {
