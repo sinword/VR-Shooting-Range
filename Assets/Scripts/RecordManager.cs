@@ -6,8 +6,9 @@ public class RecordManager : MonoBehaviour
 {
     string path;
     void Awake() {
-        path = Path.Combine(Application.persistentDataPath, "Record.json");
-        Debug.LogWarning("RecordManager path: " + path);
+        // path = Path.Combine(Application.persistentDataPath, "Record.json");
+        // Debug.LogWarning("RecordManager path: " + path);
+        path = "Record.json";
     }
 
     public List<RecordInfo> GetRecords() {

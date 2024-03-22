@@ -21,12 +21,9 @@ public class GunManager : MonoBehaviour
     private Transform _bulletSpawnPoint;
     [SerializeField]
     private GameObject _hitEffect;
-    // [SerializeField]
-    // private TrailRenderer _bulletTrail;
     [SerializeField]
     private float _shootDelay = 0.1f;
     private float _lastShootTime;
-    // Create an event
     public delegate void FireEvent();
     public event FireEvent OnShoot;
     void Start()
@@ -43,20 +40,14 @@ public class GunManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.LogWarning("Can shoot: " + canShoot);
-        Debug.LogWarning("Shoot button: " + OVRInput.GetDown(shootButton, shootingController));
-        Debug.LogWarning("Grabbable: " + (_grabbable != null));
-        Debug.LogWarning("Is grabbed: " + _grabbable.IsGrabbed());
         if (canShoot && OVRInput.GetDown(shootButton, shootingController) && _grabbable != null && _grabbable.IsGrabbed()) {
-            // Debug.LogWarning("Shoot button is pressed.");
             if (_lastShootTime + _shootDelay < Time.time) {
                 simpleShoot.StartShoot();
                 _fireSound.Play();
                 _lastShootTime = Time.time;
                 _hitScore = FireCheck();
                 OnShoot?.Invoke();
-            }
-            
+            }       
         }
     }
 
@@ -81,20 +72,4 @@ public class GunManager : MonoBehaviour
     public int GetScore() {
         return _hitScore;
     }
-    
-
-    // private IEnumerator SpawnTrail(TrailRenderer trail, RaycastHit hit) {
-    //     float time = 0;
-    //     Vector3 startPos = trail.transform.position;
-
-    //     while (time < 1) {
-    //         trail.transform.position = Vector3.Lerp(startPos, hit.point, time);
-    //         time += Time.deltaTime / trail.time;
-    //         yield return null;
-    //     }
-
-    //     trail.transform.position = hit.point;
-
-    //     Destroy(trail.gameObject, trail.time);
-    // }
 }

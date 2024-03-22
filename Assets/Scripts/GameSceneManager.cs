@@ -19,6 +19,10 @@ public class GameSceneManager : MonoBehaviour
     private GameObject _gun;
     [SerializeField]
     private RecordManager _recordManager;
+    [SerializeField]
+    private AudioSource _gameStartAudio;
+    [SerializeField]
+    private AudioSource _gameOverAudio;
 
     string playerName;
     // record the gun original position and rotation
@@ -27,28 +31,28 @@ public class GameSceneManager : MonoBehaviour
     
     public void Start() {
         _gameInfoUI.GetComponentInChildren<Canvas>().enabled = false;
-        Transform childTransform = _gun.transform.Find("M1911 Handgun_Silver (Shooting)");
-        _gunOriginalPosition = childTransform.position;
-        _gunOriginalRotation = childTransform.rotation;
+        Transform _gunModelTransform = _gun.transform.Find("M1911 Handgun_Silver (Shooting)");
+        // Set the gun to the orignal position
+        _gunOriginalPosition = _gunModelTransform.position;
+        _gunOriginalRotation = _gunModelTransform.rotation;
         _gun.transform.Find("M1911 Handgun_Silver (Shooting)").gameObject.SetActive(false);
         playerName = PlayerPrefs.GetString("PlayerName");
         Debug.LogWarning("Player name: " + playerName);
         ShowRecord();
-        // GameObject.Find("RankPlayerName").GetComponent<TMPro.TextMeshProUGUI>().text = playerName;
     }
     
     public void PlayButton() {  
         Debug.LogWarning("Game Start");
+        _gameStartAudio.Play();
         _gameInfoUI.GetComponent<GameInfoManager>().Reset();
         _gameInfoUI.GetComponent<GameInfoManager>().OnGameOver += GameOver;
          // Close gameMenuUI and open gameInfoUI
-        _gameMenuUI.GetComponentInChildren<Canvas>().enabled = false;
+        _gameMenuUI.SetActive(false);
         _gameInfoUI.GetComponentInChildren<Canvas>().enabled = true;
-        SwtichRayInteractable(false);
         _gun.transform.Find("M1911 Handgun_Silver (Shooting)").gameObject.SetActive(true);
         _gun.transform.Find("M1911 Handgun_Silver (Shooting)").position = _gunOriginalPosition;
         _gun.transform.Find("M1911 Handgun_Silver (Shooting)").rotation= _gunOriginalRotation;
-        // _gun.SetActive(true);
+        SwtichRayInteractable(false);
     }
 
     public void BackButton() {
@@ -56,17 +60,16 @@ public class GameSceneManager : MonoBehaviour
     }
 
     private void GameOver() {
-        // Close gameInfoUI and open gameMenuUI
         Debug.LogWarning("Game over.");
+        _gameOverAudio.Play();
         _gameInfoUI.GetComponent<GameInfoManager>().OnGameOver -= GameOver;
-        _gameMenuUI.GetComponentInChildren<Canvas>().enabled = true;
+        // Close gameInfoUI and open gameMenuUI
+        _gameMenuUI.SetActive(true);
         _gameInfoUI.GetComponentInChildren<Canvas>().enabled = false;
-        SwtichRayInteractable(true);
-        // Set gun to original position
         _gun.transform.Find("M1911 Handgun_Silver (Shooting)").gameObject.SetActive(false);
+        SwtichRayInteractable(true);
         UpdateRecord();
         ShowRecord();
-        // GameObject.Find("RankPlayerName").GetComponent<TMPro.TextMeshProUGUI>().text = playerName + ", Score: " + _gameInfoUI.GetComponent<GameInfoManager>().GetScore();
     }
 
     private void SwtichRayInteractable(bool status) {
@@ -77,17 +80,12 @@ public class GameSceneManager : MonoBehaviour
     private void ShowRecord() {
         List<RecordInfo> recordInfos = _recordManager.GetRecords();
         string recordText = "";
-        if (recordInfos.Count <= 10) {
-            for (int i = 0; i < recordInfos.Count; i++) {
+        for (int i = 0; i < 10; i++) {
+            if (i < recordInfos.Count) {
                 recordText += (i + 1) + ".\t" + recordInfos[i].playerName + "\t" + recordInfos[i].score + "\n";
             }
-            for (int i = recordInfos.Count; i < 10; i++) {
+            else {
                 recordText += (i + 1) + ".\t" + "Empty\n";
-            }
-        }
-        else {
-            for (int i = 0; i < 10; i++) {
-                recordText += (i + 1) + ".\t" + recordInfos[i].playerName + "\t" + recordInfos[i].score + "\n";
             }
         }
         
